@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科琳美容事業 - 日式無痛除毛專業教育訓練 V1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#fdf8f5',
+                            DEFAULT: '#d4a373',
+                            dark: '#a98467',
+                            text: '#4a3f35'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #faf9f8;
+            color: #4a3f35;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .flow-arrow::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #d4a373;
+            margin: 0.5rem 0;
+        }
+        @media (min-width: 768px) {
+            .flow-arrow-md::after {
+                content: '→';
+                display: inline-block;
+                margin: 0 1rem;
+                line-height: 100%;
+                transform: translateY(50%);
+            }
+            .flow-arrow::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased font-sans min-h-screen flex flex-col relative">
+
+    <!-- 淡化背景 -->
+    <div class="fixed inset-0 z-[-1] bg-[url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-[0.07] pointer-events-none"></div>
+
+    <!-- 專業對話框 (Custom Modal) -->
+    <div id="custom-dialog" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" id="dialog-backdrop"></div>
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-sm w-full relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="dialog-content">
+            <div class="flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-4" id="dialog-icon-container">
+                <i id="dialog-icon" data-lucide="info" class="w-8 h-8"></i>
+            </div>
+            <h3 id="dialog-title" class="text-xl font-bold text-center mb-2 text-gray-800">提示</h3>
+            <p id="dialog-message" class="text-center text-gray-600 mb-6">這是一則訊息</p>
+            <button onclick="closeDialog()" class="w-full bg-brand hover:bg-brand-dark text-white font-medium py-3 px-4 rounded-xl transition duration-200 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">
+                確認
+            </button>
+        </div>
+    </div>
+
+    <!-- 登入鎖定畫面 -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+        <div class="absolute inset-0 bg-brand-text/60 backdrop-blur-md"></div>
+        
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-md w-full mx-4 relative z-10 fade-in">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-brand-dark mb-2 tracking-widest">CORIN</h1>
+                <p class="text-sm text-gray-500 uppercase tracking-widest">Beauty | Est. 2023</p>
+                <div class="h-px w-16 bg-brand mx-auto my-6"></div>
+                <h2 class="text-xl font-medium text-gray-800 mb-1">專業教育訓練系統</h2>
+                <p class="text-sm text-gray-500">V1 版本 (2026 歸檔模組)</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">系統登入密碼</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="lock" class="h-5 w-5 text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" 
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors sm:text-sm" 
+                            placeholder="請輸入密碼 (8888)"
+                            onkeypress="handleKeyPress(event)">
+                    </div>
+                </div>
+                <button onclick="verifyPassword()" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand transition-colors duration-200">
+                    登入系統
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容區 (初始隱藏) -->
+    <div id="main-content" class="hidden flex-col w-full h-full relative">
+        
+        <!-- 導覽列 -->
+        <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-bold text-brand-dark tracking-wider">CORIN BEAUTY</span>
+                        <span class="hidden md:inline-block px-2 py-1 bg-gray-100 text-xs text-gray-500 rounded-md">2026 教育訓練 V1</span>
+                    </div>
+                    <div>
+                        <button onclick="logout()" class="text-sm font-medium text-gray-500 hover:text-brand-dark transition-colors flex items-center gap-1">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> 安全登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 英雄區塊 -->
+        <header class="bg-brand-light py-20 px-4 sm:px-6 lg:px-8 text-center border-b border-orange-100 relative overflow-hidden">
+            <div class="max-w-4xl mx-auto fade-in relative z-10">
+                <p class="text-brand font-semibold tracking-widest mb-4">2026 科琳美容事業</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-brand-text mb-6 leading-tight">日式無痛除毛專業教育訓練</h1>
+                <p class="text-xl text-gray-600 mb-8 font-light">掌握美業核心競爭力：高效、無痛、高獲利的經營之道</p>
+                <div class="inline-flex items-center justify-center px-6 py-2 border border-brand text-brand rounded-full text-sm font-medium mb-12">
+                    EST. 2023
+                </div>
+                
+                <!-- 精美圖片追加 -->
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl mx-auto max-w-4xl aspect-[21/9]">
+                    <img src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?q=80&w=2070&auto=format&fit=crop" alt="Spa environment" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+            
+            <!-- Section: 為什麼選擇日式無痛除毛 -->
+            <section class="scroll-mt-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">為什麼選擇日式無痛除毛？</h2>
+                    <div class="w-24 h-1 bg-brand mx-auto rounded-full"></div>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="grid gap-6">
+                        <div class="bg-white/90 backdrop-blur p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <span class="text-4xl font-black text-brand-light mb-2 block">01</span>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">年度最火紅</h3>
+                            <p class="text-gray-600 leading-relaxed">2026年美業最具潛力的藍海市場，精準切中現代女性「怕痛、求快、愛美」的消費趨勢。</p>
+                        </div>
+                        <div class="bg-white/90 backdrop-blur p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <span class="text-4xl font-black text-brand-light mb-2 block">02</span>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">高獲利模式</h3>
+                            <p class="text-gray-600 leading-relaxed">具備低技術門檻與高回客率。透過穩定的循環收益，實現極佳的投資報酬率與事業擴展性。</p>
+                        </div>
+                        <div class="bg-white/90 backdrop-blur p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <span class="text-4xl font-black text-brand-light mb-2 block">03</span>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">簡單高效</h3>
+                            <p class="text-gray-600 leading-relaxed">標準化施作流程，無需深厚美容背景即可快速上手。單次療程時間短，大幅提升翻床率與營收。</p>
+                        </div>
+                    </div>
+                    <div class="h-full w-full min-h-[500px] rounded-3xl overflow-hidden shadow-xl relative group">
+                        <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=2070&auto=format&fit=crop" alt="Beauty service" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 新增 Section: 實戰課程大綱 -->
+            <section class="bg-brand-text text-brand-light rounded-3xl shadow-xl p-8 md:p-12 relative overflow-hidden">
+                <!-- 裝飾背景圖案 -->
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552693673-1bf958298935?q=80&w=2073&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+                
+                <div class="text-center mb-10 relative z-10">
+                    <span class="text-brand font-bold tracking-widest text-sm mb-2 block">NEW COURSE</span>
+                    <h2 class="text-3xl font-bold mb-4">全方位實戰課程大綱</h2>
+                    <p class="text-gray-400">從理論到實作，三天掌握百萬級美業技術</p>
+                    <div class="w-24 h-1 bg-brand mx-auto rounded-full mt-4"></div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 relative z-10">
+                    <div class="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/10 hover:bg-white/15 transition-colors">
+                        <div class="w-12 h-12 bg-brand rounded-full flex items-center justify-center mb-4 text-white shadow-lg">
+                            <i data-lucide="book-open"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 border-b border-brand/30 pb-3">Day 1: 理論與基石</h3>
+                        <ul class="space-y-3 text-sm text-gray-300 list-disc pl-4 marker:text-brand">
+                            <li>毛髮結構與生長週期深度解析</li>
+                            <li>光學儀器原理與原廠安全守則</li>
+                            <li>顧客諮詢技巧與禁忌症精準評估</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/10 hover:bg-white/15 transition-colors transform md:-translate-y-4">
+                        <div class="w-12 h-12 bg-brand rounded-full flex items-center justify-center mb-4 text-white shadow-lg">
+                            <i data-lucide="scissors"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 border-b border-brand/30 pb-3">Day 2: 實操與演練</h3>
+                        <ul class="space-y-3 text-sm text-gray-300 list-disc pl-4 marker:text-brand">
+                            <li>各部位標準化高效率施作流程</li>
+                            <li>真人模特兒分組實機指導操作</li>
+                            <li>突發狀況排除與冰鎮舒緩技巧</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/10 hover:bg-white/15 transition-colors">
+                        <div class="w-12 h-12 bg-brand rounded-full flex items-center justify-center mb-4 text-white shadow-lg">
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 border-b border-brand/30 pb-3">Day 3: 經營與獲利</h3>
+                        <ul class="space-y-3 text-sm text-gray-300 list-disc pl-4 marker:text-brand">
+                            <li>療程定價策略與高獲利包套設計</li>
+                            <li>低成本社群行銷與引流拓客術</li>
+                            <li>結業實作考核與原廠認證證書頒發</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 專業知識 -->
+            <section class="bg-white rounded-3xl shadow-sm p-8 md:p-12 border border-gray-50">
+                <div class="mb-10">
+                    <span class="text-brand font-bold tracking-widest text-sm mb-2 block">01 專業知識</span>
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">光學日式除毛原理</h2>
+                    <p class="text-gray-500">技術核心與科學基礎</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="flex flex-col items-center text-center p-6 bg-brand-light/50 rounded-2xl">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-brand">
+                            <i data-lucide="sun" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">光熱作用</h3>
+                        <p class="text-sm text-gray-600">利用特定波長激光產生熱能，精準傳導至毛囊使其萎縮，從根源抑制生長，效果穩定持久。</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-6 bg-brand-light/50 rounded-2xl">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-blue-400">
+                            <i data-lucide="snowflake" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">冰鎮技術</h3>
+                        <p class="text-sm text-gray-600">全程 -5℃~0℃ 低溫冷卻系統，有效保護皮膚表層，實現真正的「零痛感」除毛體驗。</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-6 bg-brand-light/50 rounded-2xl">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-pink-400">
+                            <i data-lucide="sparkles" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">嫩膚效果</h3>
+                        <p class="text-sm text-gray-600">在除毛的同時，光能可促進膠原蛋白增生，讓肌膚在療程後更加白皙、細緻且富有彈性。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 毛髮生長週期 -->
+            <section>
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">毛髮生長週期</h2>
+                    <p class="text-gray-500">掌握除毛黃金期：為什麼需要多次療程？</p>
+                    <div class="w-24 h-1 bg-brand mx-auto rounded-full mt-4"></div>
+                </div>
+                
+                <!-- 週期流程圖 -->
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-12">
+                    <!-- 生長期 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-brand/30 w-full md:w-1/3 relative z-10 text-center flow-arrow flow-arrow-md">
+                        <h4 class="font-bold text-lg text-brand-dark mb-1">生長期 (Anagen)</h4>
+                        <p class="text-xs text-gray-400 mb-3">持續 2 - 6 年</p>
+                        <p class="text-sm text-gray-600 text-left">毛髮與毛囊緊密連結，黑色素含量最高。這是光學除毛的<span class="text-brand font-bold">最佳時機</span>，能最有效地破壞毛囊生長能力。</p>
+                    </div>
+                    <!-- 衰退期 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 w-full md:w-1/3 relative z-10 text-center flow-arrow flow-arrow-md">
+                        <h4 class="font-bold text-lg text-gray-700 mb-1">衰退期 (Catagen)</h4>
+                        <p class="text-xs text-gray-400 mb-3">持續約 2 週</p>
+                        <p class="text-sm text-gray-600 text-left">毛囊開始收縮，毛髮與毛乳頭逐漸分離。此階段能量傳導效率降低，除毛效果較弱。</p>
+                    </div>
+                    <!-- 休止期 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 w-full md:w-1/3 relative z-10 text-center">
+                        <h4 class="font-bold text-lg text-gray-700 mb-1">休止期 (Telogen)</h4>
+                        <p class="text-xs text-gray-400 mb-3">持續約 3 個月</p>
+                        <p class="text-sm text-gray-600 text-left">毛髮完全停止生長並準備脫落。此時毛囊處於休息狀態，光學施作幾乎無效。</p>
+                    </div>
+                </div>
+
+                <div class="bg-brand text-white p-6 rounded-2xl text-center shadow-lg max-w-2xl mx-auto">
+                    <h4 class="font-bold text-xl mb-2 flex items-center justify-center gap-2">
+                        <i data-lucide="calendar-check" class="w-6 h-6"></i> 專業療程建議
+                    </h4>
+                    <p>建議每 <span class="text-yellow-200 font-bold text-lg">3-4 週</span> 施作一次，連續 <span class="text-yellow-200 font-bold text-lg">6-8 次</span> 以覆蓋完整生長週期，達到理想的半永久除毛效果。</p>
+                </div>
+            </section>
+
+            <!-- Section: 核心價值 -->
+            <section class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">顧客為什麼選擇我們？</h2>
+                    <p class="text-gray-500 mb-8">專業淨毛的四大核心價值</p>
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand">
+                                <i data-lucide="feather" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-1">極致舒適</h4>
+                                <p class="text-gray-600">免敷麻藥，溫熱感極低。即使是私密處或敏感肌也能安心體驗，徹底告別傳統除毛的恐懼。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand">
+                                <i data-lucide="zap" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-1">高效節時</h4>
+                                <p class="text-gray-600">施作時間大幅縮短，滿足現代忙碌女性的高效率保養需求。在最短時間內獲得最明顯的效果。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand">
+                                <i data-lucide="message-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-1">專業諮詢</h4>
+                                <p class="text-gray-600">顧問式一對一服務，針對不同膚質與毛髮狀況提供量身定制方案，確保每一位顧客的精準護理。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand">
+                                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-1">隱私環境</h4>
+                                <p class="text-gray-600">採用預約制與獨立美容空間，提供最高規格的隱私保護與安全感，讓顧客在放鬆氛圍中變美。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-200 rounded-3xl h-full min-h-[400px] overflow-hidden shadow-xl relative group">
+                    <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2070&auto=format&fit=crop" alt="Massage and Spa" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+            </section>
+
+            <!-- Section: 安全與護理 -->
+            <section>
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">安全與專業護理</h2>
+                    <div class="w-24 h-1 bg-brand mx-auto rounded-full"></div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- 禁忌與對象 -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                        <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                            <div class="p-2 bg-red-50 text-red-500 rounded-lg"><i data-lucide="alert-triangle"></i></div>
+                            <h3 class="text-xl font-bold">安全第一：施作禁忌與對象篩選</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="x-circle" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></i>
+                                <div>
+                                    <strong class="block text-gray-800">肌膚異常狀況</strong>
+                                    <span class="text-sm text-gray-600">嚴重過敏、開放性傷口或發炎部位；曬傷、脫皮或極度乾燥之肌膚；正在進行果酸換膚或雷射療程者。</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="x-circle" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></i>
+                                <div>
+                                    <strong class="block text-gray-800">特殊體質考量</strong>
+                                    <span class="text-sm text-gray-600">具備光敏感病史或服用光敏感藥物；蟹足腫體質、癲癇或自體免疫疾病；患有傳染性皮膚病（如皰疹、疣）。</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="clock" class="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5"></i>
+                                <div>
+                                    <strong class="block text-gray-800">特殊生理時期</strong>
+                                    <span class="text-sm text-gray-600">懷孕期間及哺乳期（荷爾蒙影響效果）；生理期間（肌膚較敏感，視情況評估）。</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-orange-50 rounded-xl border border-orange-100 text-sm text-orange-800">
+                            <strong>專業提醒：</strong> 施作前必須進行詳細健康諮詢與敏感測試。安全是服務的底線。若顧客狀況不明確，請務必建議其諮詢專業醫師。
+                        </div>
+                    </div>
+
+                    <!-- 護理細節 -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                        <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                            <div class="p-2 bg-green-50 text-green-500 rounded-lg"><i data-lucide="heart-pulse"></i></div>
+                            <h3 class="text-xl font-bold">專業護理：提升效果的關鍵細節</h3>
+                        </div>
+                        
+                        <h4 class="font-bold text-brand-dark mb-3 flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> 課前須知</h4>
+                        <ul class="space-y-3 mb-6 pl-6 list-disc text-gray-600 text-sm marker:text-brand">
+                            <li><strong>自主修剪毛髮：</strong>建議顧客於施作前 1-2 天先行刮除毛髮，避免當天刮除造成微小傷口。</li>
+                            <li><strong>嚴禁拔毛行為：</strong>30 日內不可使用拔毛、熱蠟或脫毛膏，確保毛囊內留有毛根以利光學傳導。</li>
+                            <li><strong>保持肌膚含水量：</strong>充足的保濕能提升除毛效率並降低熱感，施作前一週應加強居家保濕。</li>
+                        </ul>
+
+                        <h4 class="font-bold text-brand-dark mb-3 flex items-center gap-2"><i data-lucide="bandage" class="w-4 h-4"></i> 課後護理</h4>
+                        <ul class="space-y-3 pl-6 list-disc text-gray-600 text-sm marker:text-brand">
+                            <li><strong>極致保濕與防曬：</strong>術後肌膚較為乾燥，需大量補充水分並嚴格執行物理性防曬，避免色素沉澱。</li>
+                            <li><strong>避免高溫刺激：</strong>三日內禁泡澡、高溫三溫暖或劇烈運動；七日內避免去角質或使用止汗劑。</li>
+                            <li><strong>毛髮自然代謝：</strong>毛髮於兩週內會自然脫落，嚴禁手動拔除，讓毛囊在健康的狀態下進入休止期。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 市場大比拼 (Table) -->
+            <section>
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">除毛市場大比拼：日式除毛的優勢</h2>
+                    <p class="text-gray-500 uppercase tracking-widest text-sm">Market Competitive Analysis</p>
+                </div>
+                <div class="overflow-x-auto rounded-2xl shadow-sm border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 bg-white">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">比較項目</th>
+                                <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white bg-brand uppercase tracking-wider">日式無痛除毛</th>
+                                <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">醫美雷射除毛</th>
+                                <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">傳統熱蠟除毛</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">痛感程度</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-brand-dark bg-brand-light/30">極低 (溫熱感)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">高 (刺痛/灼熱)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">中高 (撕裂痛)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">嫩膚效果</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-brand-dark bg-brand-light/30">優異 (光學美肌)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">部分效果</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">無</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">價格門檻</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-brand-dark bg-brand-light/30">親民且具彈性</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">價格昂貴</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">中等價位</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">恢復期</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-brand-dark bg-brand-light/30">無 (即刻上妝)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">需 3-7 天</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">需 1-2 天</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">安全性</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-brand-dark bg-brand-light/30">極高 (非侵入性)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">需專業醫師操作</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">易拉扯表皮</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: 經營策略 -->
+            <section class="bg-stone-800 text-white rounded-3xl p-8 md:p-12">
+                <div class="mb-12 text-center">
+                    <span class="text-brand-light font-bold tracking-widest text-sm mb-2 block">02 經營策略</span>
+                    <h2 class="text-3xl font-bold mb-4">精準獲客與品牌建立</h2>
+                    <div class="w-16 h-1 bg-brand mx-auto rounded-full"></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 mb-16">
+                    <!-- 客群畫像 -->
+                    <div>
+                        <h3 class="text-xl font-bold text-brand-light mb-6 flex items-center gap-2">
+                            <i data-lucide="users"></i> 精準客群畫像
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="bg-stone-700/50 p-5 rounded-xl">
+                                <h4 class="font-bold text-white mb-1">恐懼疼痛者</h4>
+                                <p class="text-stone-300 text-sm">尋求無痛、舒適體驗的高端顧客，對服務品質與環境極為挑剔。</p>
+                            </div>
+                            <div class="bg-stone-700/50 p-5 rounded-xl">
+                                <h4 class="font-bold text-white mb-1">小資愛美族</h4>
+                                <p class="text-stone-300 text-sm">預算約 $1.5萬-$3萬，追求高性價比且效果穩定的長期客群。</p>
+                            </div>
+                            <div class="bg-stone-700/50 p-5 rounded-xl">
+                                <h4 class="font-bold text-white mb-1">講求效率者</h4>
+                                <p class="text-stone-300 text-sm">希望在最短時間內獲得明顯效果，偏好預約制與快速施作的都會女性。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 品牌與行銷 -->
+                    <div>
+                        <h3 class="text-xl font-bold text-brand-light mb-6 flex items-center gap-2">
+                            <i data-lucide="diamond"></i> 品牌核心價值
+                        </h3>
+                        <ul class="grid grid-cols-2 gap-4 mb-8">
+                            <li class="flex items-start gap-2 text-sm text-stone-300">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand flex-shrink-0"></i>
+                                <span><strong>價格透明化:</strong> 拒絕隱藏消費</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-stone-300">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand flex-shrink-0"></i>
+                                <span><strong>衛生標準化:</strong> 嚴格器械消毒</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-stone-300">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand flex-shrink-0"></i>
+                                <span><strong>技術專業化:</strong> 技師通過認證</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-stone-300">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand flex-shrink-0"></i>
+                                <span><strong>體驗極致化:</strong> 美感服務空間</span>
+                            </li>
+                        </ul>
+
+                        <h3 class="text-xl font-bold text-brand-light mb-4 flex items-center gap-2 mt-8">
+                            <i data-lucide="rocket"></i> 全方位行銷矩陣
+                        </h3>
+                        <p class="text-sm text-stone-300 mb-4 leading-relaxed">
+                            <strong class="text-white">IG/FB 社群營銷:</strong> 視覺行銷建立品牌權威感。<br>
+                            <strong class="text-white">Line 私域經營:</strong> 深耕顧客關係，提升回購率。<br>
+                            <strong class="text-white">SEO 佈局:</strong> 針對地區性關鍵字優化。<br>
+                            <strong class="text-white">廣告策略:</strong> 精準投放鎖定興趣受眾。
+                        </p>
+                        <div class="p-3 bg-brand/20 border border-brand/50 rounded-lg text-xs text-brand-light">
+                            <strong>核心目標：</strong> 將潛在流量轉化為高黏著度會員，打造可持續增長的獲利循環。
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 實務經驗與獲利 -->
+            <section>
+                <div class="mb-10">
+                    <span class="text-brand font-bold tracking-widest text-sm mb-2 block">03 實務經驗</span>
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">數字背後的獲利藍圖</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <!-- 成長階段 -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center border-t-4 border-t-gray-300">
+                            <h4 class="font-bold text-gray-700">草創期</h4>
+                            <p class="text-sm text-gray-500 mt-2">LINE 100人</p>
+                            <p class="text-xl font-black text-brand mt-1">月營額 10萬</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center border-t-4 border-t-brand-light">
+                            <h4 class="font-bold text-gray-700">成長期</h4>
+                            <p class="text-sm text-gray-500 mt-2">LINE 200人</p>
+                            <p class="text-xl font-black text-brand mt-1">月營額 20萬</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center border-t-4 border-t-brand">
+                            <h4 class="font-bold text-gray-700">爆發期</h4>
+                            <p class="text-sm text-gray-500 mt-2">LINE 800人</p>
+                            <p class="text-xl font-black text-brand mt-1">月營額 30萬</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center border-t-4 border-t-brand-dark">
+                            <h4 class="font-bold text-gray-700">成熟期</h4>
+                            <p class="text-sm text-gray-500 mt-2">LINE 1200人+</p>
+                            <p class="text-xl font-black text-brand mt-1">月營額 40萬+</p>
+                        </div>
+                    </div>
+
+                    <!-- 營收計算範例 -->
+                    <div class="bg-brand-light p-8 rounded-3xl">
+                        <h3 class="text-xl font-bold text-brand-dark mb-6 flex justify-between items-end border-b border-brand/20 pb-4">
+                            <span>營收計算範例</span>
+                            <span class="text-sm font-normal text-gray-600">有效會員數 100人</span>
+                        </h3>
+                        <ul class="space-y-4 mb-6">
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>小部位 ($399) × 35人</span>
+                                <span class="font-bold">$13,965</span>
+                            </li>
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>中部位 ($599) × 20人</span>
+                                <span class="font-bold">$11,980</span>
+                            </li>
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>大部位 ($899) × 15人</span>
+                                <span class="font-bold">$13,485</span>
+                            </li>
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>私密處 ($1799) × 35人</span>
+                                <span class="font-bold">$62,965</span>
+                            </li>
+                        </ul>
+                        <div class="pt-4 border-t border-brand/30 flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-800">預估月總營收</span>
+                            <span class="text-2xl font-black text-brand-dark">$102,395</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 頁尾結論 -->
+        <footer class="bg-white border-t border-gray-200 mt-12 py-16 relative overflow-hidden">
+            <!-- 裝飾用背景圓圈 -->
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-brand-light opacity-80 z-0 pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-orange-50 opacity-50 z-0 pointer-events-none"></div>
+
+            <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+                <h2 class="text-3xl font-bold text-brand-dark mb-6">攜手科琳美容事業 共創美業新藍海</h2>
+                <div class="grid md:grid-cols-3 gap-6 mb-12 text-left">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">專業支持</h4>
+                        <p class="text-sm text-gray-500">提供完整的技術培訓、行銷支援與經營諮詢，確保事業穩健起步並持續獲利。</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">未來展望</h4>
+                        <p class="text-sm text-gray-500">致力於成為顧客心中最值得信賴的除毛美學品牌，引領 2026 年美業技術新標準。</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">合作共贏</h4>
+                        <p class="text-sm text-gray-500">我們不僅是技術提供者，更是您創業路上的戰略夥伴，共同創造美麗與財富。</p>
+                    </div>
+                </div>
+
+                <!-- 精美圖片追加: 結語形象 -->
+                <div class="w-full max-w-2xl mx-auto h-56 rounded-2xl overflow-hidden shadow-lg mb-8 relative group">
+                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=2070&auto=format&fit=crop" alt="Skincare professional" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+
+                <p class="text-xl font-bold tracking-widest text-brand">ANY QUESTIONS?</p>
+                <div class="mt-8 text-gray-400 text-sm">
+                    &copy; 2026 Corin Beauty. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 腳本邏輯 -->
+    <script>
+        // 初始化 Icons
+        lucide.createIcons();
+
+        // 登入邏輯
+        function verifyPassword() {
+            const pwdInput = document.getElementById('password');
+            const pwd = pwdInput.value;
+
+            if (pwd === '8888') {
+                // 成功登入
+                document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none', 'transition-opacity', 'duration-500');
+                setTimeout(() => {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    const mainContent = document.getElementById('main-content');
+                    mainContent.classList.remove('hidden');
+                    mainContent.classList.add('fade-in');
+                    
+                    // 顯示成功對話框
+                    showDialog('登入成功', '歡迎進入 2026 科琳美容事業專業教育訓練系統。', 'success');
+                }, 500);
+            } else {
+                // 登入失敗，清空密碼並顯示對話框
+                pwdInput.value = '';
+                showDialog('登入失敗', '您輸入的密碼錯誤，請重新確認後再試。', 'error');
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        function logout() {
+            document.getElementById('password').value = '';
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('fade-in');
+            
+            const loginScreen = document.getElementById('login-screen');
+            loginScreen.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+            
+            showDialog('已登出', '您已安全登出系統。', 'info');
+        }
+
+        // 專業對話框控制
+        function showDialog(title, message, type) {
+            const dialog = document.getElementById('custom-dialog');
+            const content = document.getElementById('dialog-content');
+            const titleEl = document.getElementById('dialog-title');
+            const messageEl = document.getElementById('dialog-message');
+            const iconContainer = document.getElementById('dialog-icon-container');
+            const icon = document.getElementById('dialog-icon');
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+
+            // 根據類型設定樣式與圖示
+            if (type === 'success') {
+                iconContainer.className = 'flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-4 bg-green-100 text-green-600';
+                icon.setAttribute('data-lucide', 'check-circle');
+            } else if (type === 'error') {
+                iconContainer.className = 'flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-4 bg-red-100 text-red-600';
+                icon.setAttribute('data-lucide', 'alert-circle');
+            } else {
+                iconContainer.className = 'flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-4 bg-blue-100 text-blue-600';
+                icon.setAttribute('data-lucide', 'info');
+            }
+            lucide.createIcons();
+
+            dialog.classList.remove('hidden');
+            // 觸發重繪以播放過渡動畫
+            void dialog.offsetWidth; 
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeDialog() {
+            const dialog = document.getElementById('custom-dialog');
+            const content = document.getElementById('dialog-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                dialog.classList.add('hidden');
+            }, 300); // 等待過渡動畫完成
+        }
+    </script>
+</body>
+</html>
