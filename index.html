@@ -95,7 +95,6 @@
                 <p class="text-sm text-gray-500 uppercase tracking-widest">Beauty | Est. 2023</p>
                 <div class="h-px w-16 bg-brand mx-auto my-6"></div>
                 <h2 class="text-xl font-medium text-gray-800 mb-1">專業教育訓練系統</h2>
-                <p class="text-sm text-gray-500">V1 版本 (2026 歸檔模組)</p>
             </div>
 
             <div class="space-y-6">
@@ -107,7 +106,7 @@
                         </div>
                         <input type="password" id="password" 
                             class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors sm:text-sm" 
-                            placeholder="請輸入密碼 (8888)"
+                            placeholder=""
                             onkeypress="handleKeyPress(event)">
                     </div>
                 </div>
@@ -127,7 +126,7 @@
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center gap-2">
                         <span class="text-xl font-bold text-brand-dark tracking-wider">CORIN BEAUTY</span>
-                        <span class="hidden md:inline-block px-2 py-1 bg-gray-100 text-xs text-gray-500 rounded-md">2026 教育訓練 V1</span>
+                        <span class="hidden md:inline-block px-2 py-1 bg-gray-100 text-xs text-gray-500 rounded-md">2026 教育訓練</span>
                     </div>
                     <div>
                         <button onclick="logout()" class="text-sm font-medium text-gray-500 hover:text-brand-dark transition-colors flex items-center gap-1">
@@ -188,7 +187,7 @@
                 </div>
             </section>
 
-            <!-- 新增 Section: 實戰課程大綱 -->
+            <!-- Section: 實戰課程大綱 -->
             <section class="bg-brand-text text-brand-light rounded-3xl shadow-xl p-8 md:p-12 relative overflow-hidden">
                 <!-- 裝飾背景圖案 -->
                 <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552693673-1bf958298935?q=80&w=2073&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
@@ -230,7 +229,7 @@
                         <ul class="space-y-3 text-sm text-gray-300 list-disc pl-4 marker:text-brand">
                             <li>療程定價策略與高獲利包套設計</li>
                             <li>低成本社群行銷與引流拓客術</li>
-                            <li>結業實作考核與原廠認證證書頒發</li>
+                            <li>結業實作考核</li>
                         </ul>
                     </div>
                 </div>
@@ -264,6 +263,43 @@
                         </div>
                         <h3 class="font-bold text-lg mb-2">嫩膚效果</h3>
                         <p class="text-sm text-gray-600">在除毛的同時，光能可促進膠原蛋白增生，讓肌膚在療程後更加白皙、細緻且富有彈性。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 新增 Section: 頂級設備介紹 -->
+            <section>
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">旗艦級除毛儀器介紹</h2>
+                    <div class="w-24 h-1 bg-brand mx-auto rounded-full"></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="h-full w-full min-h-[400px] rounded-3xl overflow-hidden shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold text-brand-dark mb-4">專為亞洲膚質打造</h3>
+                        <p class="text-gray-600 leading-relaxed">採用最新一代無痛冰鎮光學技術，搭載多頻段濾波片，精準打擊各層次毛囊，同時兼具淨白煥膚功效，讓每一次施作都是極致享受。</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="zap" class="text-brand w-5 h-5"></i>
+                                </div>
+                                <span class="text-gray-700"><strong>極速出光：</strong> 大面積快速掃描，節省 50% 操作時間。</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="snowflake" class="text-blue-400 w-5 h-5"></i>
+                                </div>
+                                <span class="text-gray-700"><strong>藍寶石冷卻：</strong> 探頭直達 0℃，保護表皮不燙傷。</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="shield-check" class="text-green-500 w-5 h-5"></i>
+                                </div>
+                                <span class="text-gray-700"><strong>智能溫控：</strong> 內建多重安全感測，杜絕醫療風險。</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -603,6 +639,31 @@
                             <span class="text-lg font-bold text-gray-800">預估月總營收</span>
                             <span class="text-2xl font-black text-brand-dark">$102,395</span>
                         </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 新增 Section: 常見問題 FAQ -->
+            <section class="bg-brand-light/40 rounded-3xl p-8 md:p-12 border border-brand/10">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-brand-text mb-4">常見問題 FAQ</h2>
+                    <p class="text-gray-500">解答您的創業與課程疑問</p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <!-- FAQ 1 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i data-lucide="help-circle" class="text-brand w-5 h-5"></i> 零基礎可以報名這門課程嗎？</h4>
+                        <p class="text-sm text-gray-600 pl-7">當然可以。我們的課程從基礎皮膚生理學到實機操作，採循序漸進的教學方式，即使是美業小白也能輕鬆上手，快速建立專業能力。</p>
+                    </div>
+                    <!-- FAQ 2 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i data-lucide="help-circle" class="text-brand w-5 h-5"></i> 課程會提供真人實操演練嗎？</h4>
+                        <p class="text-sm text-gray-600 pl-7">會的。Day 2 安排了大量的真人模特兒實操，並由資深導師從旁一對一指導，確保您在結業前能熟練掌握各部位的操作手勢與力度。</p>
+                    </div>
+                    <!-- FAQ 3 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i data-lucide="help-circle" class="text-brand w-5 h-5"></i> 結業後有相關的後續支援嗎？</h4>
+                        <p class="text-sm text-gray-600 pl-7">我們提供完善的課後輔導。包含免費複訓機會、行銷素材共享群組，以及機器設備的後勤維修保障，成為您創業路上最堅實的後盾。</p>
                     </div>
                 </div>
             </section>
